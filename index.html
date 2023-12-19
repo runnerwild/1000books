@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>1000 books to read before you die</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+     <style>
+        #books {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+    #detailView {
+    position: absolute; /* Allows for positioning anywhere */
+    background-color: white;
+    border: 1px solid black;
+    width: 70%;
+    padding: 10px;
+    z-index: 100; /* Ensures it's above other content */
+    display: none; /* Initially hidden */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+        .dataTables_length  {
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            text-align: center;
+        }
+        .dataTables_filter {
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <table id="books" class="stripe compact hover  row-border  order-column">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>Overall</th>
+                <th>For</th>
+                <th>Against</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- JSON data will be inserted here -->
+<!--
+                <th>Comments</th>
+
+                    <td>${}</td> "
+-->
+        </tbody>
+    </table>
+  <div id="detailView" ></div>
+    <script>
+    let jsonData;
+    fetch('combined.json')
+        .then(response => response.json())
+        .then(data => {
+             jsonData = data;
+            let tableBody = '';
+            data.forEach((item, index) =>  {
+                tableBody += `<tr>
+<td><button onclick="showDetails(${index})"><img width=100 src=${item.customAttributes.product.image}></button></td>
+                    <td>${item.normalizedTitle}</td>
+                    <td>${item.normalizedFirstAuthor}</td>
+                    <td>${item.community.name}</td>
+                    <td>${item.readCount - item.lifeShortCount}</td>
+                    <td>${item.readCount}</td>
+                    <td>${item.lifeShortCount}</td>
+                </tr>`;
+            });
+            document.querySelector("#books tbody").innerHTML = tableBody;
+            $('#books').DataTable();
+        });
+    document.getElementById('detailView').addEventListener('click', function() { this.style.display = 'none'; });
+    function showDetails(index) {
+        const item = jsonData[index];
+        // console.log(`<pre>${JSON.stringify(item, null, 2)}</pre>`);
+        // document.getElementById('detailView').innerHTML = `<pre>${JSON.stringify(item, null, 2)}</pre>`;
+      let list = '';
+      document.getElementById('detailView').innerHTML = '';
+      item.earliestNotes.map(obj => obj.text).forEach((text) => {
+        list += `<li>${text}</li>`
+      })
+      const detailView = document.getElementById('detailView')
+      detailView.innerHTML = `<ul>${list}</ul>`;
+      const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+    // Position the detailView at the click position, adjusted for scroll
+      detailView.style.left = (event.clientX + scrollX) + 'px';
+      detailView.style.top = (event.clientY + scrollY) + 'px';
+      detailView.style.display = 'block';
+
+    }
+    </script>
+</body>
+</html>
+

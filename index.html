@@ -21,22 +21,15 @@
     font-family: Arial, sans-serif;
     font-size: 14px;
 }
-        .dataTables_length  {
+ .dataTables_info,   .dataTables_filter, .dataTables_length, .dataTables_paginate, .paging_simple_numbers  {
             font-family: Arial, sans-serif;
-            font-size: 20px;
-            text-align: center;
-        }
-        .dataTables_filter {
-            font-family: Arial, sans-serif;
-            font-size: 20px;
-            text-align: center;
         }
 
         }
     </style>
 </head>
 <body>
-    <table id="books" class="stripe compact hover  row-border  order-column">
+    <table id="books" class="display footer">
         <thead>
             <tr>
                 <th>Image</th>
@@ -49,12 +42,6 @@
             </tr>
         </thead>
         <tbody>
-            <!-- JSON data will be inserted here -->
-<!--
-                <th>Comments</th>
-
-                    <td>${}</td> "
--->
         </tbody>
     </table>
   <div id="detailView" ></div>
@@ -77,13 +64,48 @@
                 </tr>`;
             });
             document.querySelector("#books tbody").innerHTML = tableBody;
-            $('#books').DataTable();
+            $('#books').DataTable()
+              .order( [ 4, 'desc' ] )
+                      .draw();
+            filter();
         });
+
+    function filter(){
+      var table = $('#books').DataTable();
+       
+          var select = $('<select />')
+              .appendTo(
+                  table.column(3).header()
+              )
+              .on( 'change', function () {
+                 if ( this.value == 'all' ) {
+                  table
+                      .column(3)
+                      .search( '' )
+                  } else {
+                  table
+                      .column(3)
+                      .search( $(this).val() )
+            }
+                  table
+              .order( [ 4, 'desc' ] )
+                      .draw();
+              } );
+       
+          select.append( '<option value=all>All</option>') ;
+          table
+              .column(3)
+              .cache( 'search' )
+              .sort()
+              .unique()
+              .each( function ( d ) {
+                  select.append( $('<option value="'+d+'">'+d+'</option>') );
+              } );
+    }
     document.getElementById('detailView').addEventListener('click', function() { this.style.display = 'none'; });
     function showDetails(index) {
+      if($('#detailView:visible').length == 0) {
         const item = jsonData[index];
-        // console.log(`<pre>${JSON.stringify(item, null, 2)}</pre>`);
-        // document.getElementById('detailView').innerHTML = `<pre>${JSON.stringify(item, null, 2)}</pre>`;
       let list = '';
       document.getElementById('detailView').innerHTML = '';
       item.earliestNotes.map(obj => obj.text).forEach((text) => {
@@ -94,10 +116,12 @@
       const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
       const scrollY = window.pageYOffset || document.documentElement.scrollTop;
 
-    // Position the detailView at the click position, adjusted for scroll
       detailView.style.left = (event.clientX + scrollX) + 'px';
       detailView.style.top = (event.clientY + scrollY) + 'px';
       detailView.style.display = 'block';
+      } else {
+        document.getElementById('detailView').style.display = 'none';
+      }
 
     }
     </script>

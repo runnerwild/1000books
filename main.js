@@ -8,7 +8,8 @@
             data.forEach((item, index) =>  {
                 tableBody += `<tr>
                     <td><button onclick="showDetails(${index})"><img width=100 src=${item.customAttributes.product.image}></button></td>
-<td>Amazon<a href="https://www.amazon.com/s?k=book for ${item.normalizedTitle}" target="_blank">${item.normalizedTitle}</a>
+<td><a href="https://www.amazon.com/s?k=book for ${item.normalizedTitle}" target="_blank">${item.normalizedTitle}</a>
+<br/>
 <br/><a href="https://www.libgen.is/search.php?req=${item.normalizedTitle}">libgen search</a>
 </td>
                     <td>${item.normalizedFirstAuthor}</td>
@@ -19,7 +20,17 @@
                 </tr>`;
             });
             document.querySelector("#books tbody").innerHTML = tableBody;
-        $('#books').DataTable({aLengthMenu: [ [ 50, 100, 200 ], [ 50, 100, 200] ]})
+        $('#books').DataTable({aLengthMenu: [ [ 50, 100, 200 ], [ 50, 100, 200] ],
+columns: [
+    null,
+    null,
+    { "width": "15%" },
+    null,
+    null,
+    null,
+    null
+  ]
+        })
               .order( [ 4, 'desc' ] )
                       .draw();
             filter();
